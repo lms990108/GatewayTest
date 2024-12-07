@@ -24,7 +24,6 @@ public class GatewayConfig {
     /**
      * API 라우팅
      * /api/**로 들어오는 요청을 8080포트 application 으로 전달.
-     * /admin/** 의 경우 유저 권한 검사
      */
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, JwtAuthorizationFilter jwtAuthorizationFilter) {
@@ -33,10 +32,6 @@ public class GatewayConfig {
                 .route("api-route", r -> r.path("/api/**")
                         .filters(f -> f.filter(jwtAuthorizationFilter) // JWT 필터
                                 .rewritePath("/api/(?<segment>.*)", "/${segment}")) // Path Rewrite 필터
-                        .uri("http://localhost:8080"))
-                // /admin/** 경로
-                .route("admin-route", r -> r.path("/admin/**")
-                        .filters(f -> f.filter(jwtAuthorizationFilter)) // JWT 필터만 추가
                         .uri("http://localhost:8080"))
                 .build();
     }

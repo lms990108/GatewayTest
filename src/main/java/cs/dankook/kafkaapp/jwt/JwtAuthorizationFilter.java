@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 @Component
@@ -40,32 +37,23 @@ public class JwtAuthorizationFilter implements GatewayFilter {
         String token = authHeader.substring(7); // "Bearer " 제거
 
         try {
-            // JWT 검증
-            SecretKey key = Keys.hmacShaKeyFor(jwtUtil.getSecretKey().getBytes(StandardCharsets.UTF_8));
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            // 기존 JWT 해석
+            Claims claims = jwtUtil.parseClaims(token);
 
             // 유저 정보 추출
-            String userEmail = claims.get("email", String.class);
+            String userEmail = claims.getSubject();
             String role = claims.get("role", String.class);
 
-            // ADMIN 검증 (ADMIN 경로에만 필요)
-            if (exchange.getRequest().getPath().toString().startsWith("/admin")) {
-                if (!"ADMIN".equals(role)) {
-                    return onError(exchange, "Forbidden: Admin access only", HttpStatus.FORBIDDEN);
-                }
-            }
+            // 새로운 내부 JWT 생성
+            String newJwt = jwtUtil.generateToken(userEmail, role); // 새 JWT 생성
 
             // Kafka 메시지 생성 및 전송
             String topic = "auth-logs"; // 예: 고정된 토픽 이름 (동적 토픽도 가능)
-            String message = String.format("{\"userEmail\":\"%s\", \"role\":\"%s\", \"path\":\"%s\"}",
-                    userEmail, role, exchange.getRequest().getPath().toString());
+            String message = String.format("{\"newJwt\":\"%s\", \"path\":\"%s\"}",
+                    newJwt, exchange.getRequest().getPath().toString());  // 새 JWT 전송
             kafkaProducer.sendMessage(topic, message);
 
-            // 유저 정보를 요청 헤더에 추가
+            // 유저 정보를 요청 헤더에 추가 (기존 해석한 정보를 헤더로 추가)
             exchange = exchange.mutate()
                     .request(exchange.getRequest().mutate()
                             .header("X-User-Email", userEmail)
