@@ -9,6 +9,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network  # 동일한 네트워크
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -18,7 +20,26 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
     depends_on:
       - zookeeper
+    networks:
+      - kafka-network  # 동일한 네트워크
+
+#  kafka-gateway:
+#    build: .
+#    container_name: kafka-gateway
+#    depends_on:
+#      - kafka
+#    environment:
+#      - KAFKA_BROKER=kafka:9092  # kafka 컨테이너와 연결
+#      - API_URL=http://kafka-gateway:8080  # 컨테이너 이름을 API URL로 사용
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - kafka-network  # 동일한 네트워크
+
+networks:
+  kafka-network:
+    driver: bridge  # 네트워크 드라이버를 bridge로 설정

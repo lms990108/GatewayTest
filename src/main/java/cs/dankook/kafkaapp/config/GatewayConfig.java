@@ -18,8 +18,8 @@ public class GatewayConfig {
         this.jwtAuthorizationFilter = jwtAuthorizationFilter;
     }
 
-    @Value("${test.api.path}")
-    private String apiPath;
+    @Value("${api.url}")
+    private String apiUrl;
 
     /**
      * API 라우팅
@@ -27,12 +27,13 @@ public class GatewayConfig {
      */
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, JwtAuthorizationFilter jwtAuthorizationFilter) {
+        System.out.printf("apiUrl: %s%n", apiUrl);
         return builder.routes()
                 // /api/** 경로
                 .route("api-route", r -> r.path("/api/**")
                         .filters(f -> f.filter(jwtAuthorizationFilter) // JWT 필터
                                 .rewritePath("/api/(?<segment>.*)", "/${segment}")) // Path Rewrite 필터
-                        .uri("http://localhost:8080"))
+                        .uri(apiUrl))
                 .build();
     }
 
