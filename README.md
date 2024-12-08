@@ -2,9 +2,8 @@
 
 ## 프로젝트 개요
 
-이 프로젝트는 Spring Cloud Gateway를 활용하여 요청 라우팅을 수행하며, 보안 강화를 위해 JWT(JSON Web Token)를 검증하고 새로운 JWT를 생성하여 Kafka를 통해 전송하는 기능을 포함하고 있습니다. 게이트웨이는 단순한 요청 라우팅뿐만 아니라, 인증 및 인가 로직을 수행하고 내부 서비스와의 통신에 필요한 JWT를 동적으로 생성하여 Kafka 메시지로 전달합니다.
-
-내부 JWT 의 필요성에 대한 아이디어 출처 : https://toss.tech/article/slash23-server
+- 이 프로젝트는 Spring Cloud Gateway를 활용하여 요청 라우팅을 수행하며, 보안 강화를 위해 JWT(JSON Web Token)를 검증하고 새로운 JWT를 생성하여 Kafka를 통해 전송하는 기능을 포함하고 있습니다. 게이트웨이는 단순한 요청 라우팅뿐만 아니라, 인증 및 인가 로직을 수행하고 내부 서비스와의 통신에 필요한 JWT를 동적으로 생성하여 Kafka 메시지로 전달합니다.
+- 내부 JWT 의 필요성에 대한 아이디어 출처 : https://toss.tech/article/slash23-server
 ---
 
 ## 주요 기능
