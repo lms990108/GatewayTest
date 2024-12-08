@@ -4,7 +4,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import cs.dankook.kafkaapp.jwt.JwtAuthorizationFilter;
 import cs.dankook.kafkaapp.jwt.JwtUtil;
-import cs.dankook.kafkaapp.kafka.KafkaConsumerService;
 import cs.dankook.kafkaapp.kafka.KafkaProducer;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
